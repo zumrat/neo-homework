@@ -1,4 +1,4 @@
-package lv.phonevalidator.homework.model;
+package lv.phonevalidator.homework.entity;
 
 import jakarta.persistence.*;
 
