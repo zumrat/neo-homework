@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "countries")
-public class Country {
+public class CountryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long countryId;
@@ -16,9 +16,9 @@ public class Country {
     private String name;
 
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-    private Set<CountryCode> codes;
+    private Set<CountryCodeEntity> codes;
 
-    public Country(Long countryId, String name, Set<CountryCode> codes) {
+    public CountryEntity(Long countryId, String name, Set<CountryCodeEntity> codes) {
         this.countryId = countryId;
         this.name = name;
         this.codes = codes;
@@ -36,11 +36,11 @@ public class Country {
         return name;
     }
 
-    public Set<CountryCode> getCodes() {
+    public Set<CountryCodeEntity> getCodes() {
         return codes;
     }
 
-    public void setCodes(Set<CountryCode> codes) {
+    public void setCodes(Set<CountryCodeEntity> codes) {
         this.codes = codes;
     }
 
@@ -48,7 +48,7 @@ public class Country {
         this.name = name;
     }
 
-    public Country() {
+    public CountryEntity() {
         super();
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PhoneValidatorController {
 
     @GetMapping(path = "/getCountryByPhoneNumber")
-    public ResponseEntity<String> getCountryByPhoneNumber(@RequestParam String phoneNumber){
+    public ResponseEntity<String> getCountryByPhoneNumber(@RequestParam String phoneNumber) {
         return ResponseEntity.ok(phoneNumber + "ok");
     }
 }

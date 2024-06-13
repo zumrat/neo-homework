@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "country_codes")
-public class CountryCode {
+public class CountryCodeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,15 +15,15 @@ public class CountryCode {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
-    private Country country;
+    private CountryEntity countryEntity;
 
-    public CountryCode(Long countryCodeId, String codeValue, Country country) {
+    public CountryCodeEntity(Long countryCodeId, String codeValue, CountryEntity countryEntity) {
         this.countryCodeId = countryCodeId;
         this.codeValue = codeValue;
-        this.country = country;
+        this.countryEntity = countryEntity;
     }
 
-    public CountryCode() {
+    public CountryCodeEntity() {
         super();
     }
 
@@ -43,11 +43,11 @@ public class CountryCode {
         this.codeValue = codeValue;
     }
 
-    public Country getCountry() {
-        return country;
+    public CountryEntity getCountry() {
+        return countryEntity;
     }
 
-    public void setCountry(Country country) {
-        this.country = country;
+    public void setCountry(CountryEntity countryEntity) {
+        this.countryEntity = countryEntity;
     }
 }
