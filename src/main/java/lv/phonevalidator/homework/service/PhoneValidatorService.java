@@ -1,9 +1,10 @@
 package lv.phonevalidator.homework.service;
 
 import jakarta.annotation.PostConstruct;
-//import lv.phonevalidator.homework.repository.PhoneValidatorRepository;
-//import lv.phonevalidator.homework.mapper.CountryMapper;
-//import lv.phonevalidator.homework.repository.PhoneValidatorRepository;
+import lv.phonevalidator.homework.entity.CountryEntity;
+import lv.phonevalidator.homework.repository.PhoneValidatorRepository;
+import lv.phonevalidator.homework.mapper.CountryMapper;
+import lv.phonevalidator.homework.repository.PhoneValidatorRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
@@ -22,20 +23,14 @@ public class PhoneValidatorService {
     private static final String WIKI_PAGE = "https://en.wikipedia.org/wiki/List_of_country_calling_codes#Alphabetical_order";
     private static final String COUNTRY_CODES_TABLE = "table.wikitable.sortable.sticky-header-multi";
 
-//    private final CountryMapper countryMapper;
-//    private final PhoneValidatorRepository phoneValidatorRepository;
-//
-//
-//    public PhoneValidatorService(CountryMapper countryMapper, PhoneValidatorRepository phoneValidatorRepository) {
-//        this.countryMapper = countryMapper;
-//        this.phoneValidatorRepository = phoneValidatorRepository;
-//    }
+    private final CountryMapper countryMapper;
+    private final PhoneValidatorRepository phoneValidatorRepository;
 
 
-//    public PhoneValidatorService(PhoneValidatorRepository phoneValidatorRepository) {
-//        this.phoneValidatorRepository = phoneValidatorRepository;
-//    }
-
+    public PhoneValidatorService(CountryMapper countryMapper, PhoneValidatorRepository phoneValidatorRepository) {
+        this.countryMapper = countryMapper;
+        this.phoneValidatorRepository = phoneValidatorRepository;
+    }
 
     public void mainFlow() {
         //call populateDatabaseWithPhoneNumbers
@@ -49,13 +44,17 @@ public class PhoneValidatorService {
         Document doc = Jsoup.connect(WIKI_PAGE).get();
 //        log(doc.title());
         var table = doc.select(COUNTRY_CODES_TABLE).getFirst(); // retrieving first occurrence of the table, in this case it is only one
-        Map<String, List<String>> something = table.childNode(1).childNodes().stream() //extracting table body table.childNode(1), afterwards getting all childNodes
+        var countryAndCountryCodesMap = table.childNode(1).childNodes().stream() //extracting table body table.childNode(1), afterwards getting all childNodes
                 .filter(it -> it.nodeName().equals("tr"))
                 .skip(2) // skipping headline (serving/code etc)
                 .map(tableRow -> Pair.of(getCountry(tableRow), getCountryCodes(tableRow)
                 )).collect(Pair.toMap());
+
+        var countryEntities = countryMapper.toEntities(countryAndCountryCodesMap);
+        phoneValidatorRepository.saveAll(countryEntities);
+
         System.out.println(doc.title());
-        System.out.println(something);
+        System.out.println(countryAndCountryCodesMap);
 
         Elements newsHeadlines = doc.select("#mp-itn b a");
 
