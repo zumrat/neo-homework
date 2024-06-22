@@ -10,7 +10,7 @@ import java.util.Set;
 public class CountryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long countryId;
+    private Long id;
 
     @Column(name = "country_name", nullable = false, length = 50)
     private String name;
@@ -18,37 +18,30 @@ public class CountryEntity {
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
     private Set<CountryCodeEntity> codes;
 
-    public CountryEntity(Long countryId, String name, Set<CountryCodeEntity> codes) {
-        this.countryId = countryId;
-        this.name = name;
-        this.codes = codes;
+    public Long getId() {
+        return id;
     }
 
-    public Long getCountryId() {
-        return countryId;
-    }
-
-    public void setCountryId(Long countryId) {
-        this.countryId = countryId;
+    public CountryEntity setId(Long countryId) {
+        this.id = countryId;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
+    public CountryEntity setName(String name) {
+        this.name = name;
+        return this;
+    }
+
     public Set<CountryCodeEntity> getCodes() {
         return codes;
     }
 
-    public void setCodes(Set<CountryCodeEntity> codes) {
+    public CountryEntity setCodes(Set<CountryCodeEntity> codes) {
         this.codes = codes;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public CountryEntity() {
-        super();
+        return this;
     }
 }

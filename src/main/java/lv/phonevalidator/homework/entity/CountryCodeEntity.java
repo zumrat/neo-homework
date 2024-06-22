@@ -8,46 +8,39 @@ public class CountryCodeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long countryCodeId;
+    private Long id;
 
     @Column(name = "country_code", nullable = false)
-    private String codeValue;
+    private String countryCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "country_id")
     private CountryEntity countryEntity;
 
-    public CountryCodeEntity(Long countryCodeId, String codeValue, CountryEntity countryEntity) {
-        this.countryCodeId = countryCodeId;
-        this.codeValue = codeValue;
-        this.countryEntity = countryEntity;
+    public Long getId() {
+        return id;
     }
 
-    public CountryCodeEntity() {
-        super();
+    public CountryCodeEntity setId(Long countryCodeId) {
+        this.id = countryCodeId;
+        return this;
     }
 
-    public Long getCountryCodeId() {
-        return countryCodeId;
+    public String getCountryCode() {
+        return countryCode;
     }
 
-    public void setCountryCodeId(Long countryCodeId) {
-        this.countryCodeId = countryCodeId;
-    }
-
-    public String getCodeValue() {
-        return codeValue;
-    }
-
-    public void setCodeValue(String codeValue) {
-        this.codeValue = codeValue;
+    public CountryCodeEntity setCountryCode(String codeValue) {
+        this.countryCode = codeValue;
+        return this;
     }
 
     public CountryEntity getCountry() {
         return countryEntity;
     }
 
-    public void setCountry(CountryEntity countryEntity) {
+    public CountryCodeEntity setCountry(CountryEntity countryEntity) {
         this.countryEntity = countryEntity;
+        return this;
     }
 }
