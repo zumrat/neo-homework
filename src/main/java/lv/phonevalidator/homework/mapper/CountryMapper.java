@@ -2,6 +2,8 @@ package lv.phonevalidator.homework.mapper;
 
 import lv.phonevalidator.homework.entity.CountryCodeEntity;
 import lv.phonevalidator.homework.entity.CountryEntity;
+import lv.phonevalidator.homework.model.CountryCodeDTO;
+import lv.phonevalidator.homework.model.CountryDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,6 +18,30 @@ public class CountryMapper {
         return countries.entrySet().stream()
                 .map(CountryMapper::createCountryEntity)
                 .toList();
+    }
+
+    public CountryDTO toCountryDTO(CountryEntity countryEntity) {
+        if (countryEntity == null) {
+            return null;
+        }
+        var codes = countryEntity.getCodes().stream()
+                .map(this::toCountryCodeDTO)
+                .collect(Collectors.toSet());
+
+        return CountryDTO.builder()
+                .name(countryEntity.getName())
+                .codes(codes)
+                .build();
+    }
+
+    private CountryCodeDTO toCountryCodeDTO(CountryCodeEntity countryCodeEntity) {
+        if (countryCodeEntity == null) {
+            return null;
+        }
+
+        return CountryCodeDTO.builder()
+                .countryCode(countryCodeEntity.getCountryCode())
+                .build();
     }
 
     private static CountryEntity createCountryEntity(Map.Entry<String, List<String>> entry) {
