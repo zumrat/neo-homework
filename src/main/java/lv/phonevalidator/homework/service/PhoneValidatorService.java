@@ -2,7 +2,6 @@ package lv.phonevalidator.homework.service;
 
 import jakarta.annotation.PostConstruct;
 import lv.phonevalidator.homework.entity.CountryEntity;
-import lv.phonevalidator.homework.repository.PhoneValidatorRepository;
 import lv.phonevalidator.homework.mapper.CountryMapper;
 import lv.phonevalidator.homework.repository.PhoneValidatorRepository;
 import org.jsoup.Jsoup;
@@ -14,8 +13,10 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PhoneValidatorService {
@@ -51,7 +52,14 @@ public class PhoneValidatorService {
                 )).collect(Pair.toMap());
 
         var countryEntities = countryMapper.toEntities(countryAndCountryCodesMap);
-        phoneValidatorRepository.saveAll(countryEntities);
+        countryEntities
+                .forEach(countryEntity -> {
+                    if (!phoneValidatorRepository.existsByName(countryEntity.getName())) {
+                        phoneValidatorRepository.save(countryEntity);
+                    }
+                });
+
+        identifyCountry("37128818914", 0);
 
         System.out.println(doc.title());
         System.out.println(countryAndCountryCodesMap);
@@ -59,8 +67,6 @@ public class PhoneValidatorService {
         Elements newsHeadlines = doc.select("#mp-itn b a");
 
 
-//        saveToDb(something);
-//        phoneValidatorRepository.saveAll(something);
     }
 
     private static List<String> getCountryCodes(Node tableRow) {
@@ -91,21 +97,31 @@ public class PhoneValidatorService {
                 .map(Node::lastChild)
                 .map(TextNode.class::cast)
                 .map(TextNode::text)
+                .map(String::trim)
                 .orElseThrow();
     }
 
 
-    private Map<String, List<String>> identifyCountry(List<Map.Entry<String, List<String>>> allCountries) {
-        return null;
+    // input number ->
+    // if size == 1 when cutInHalf(number)[0] or can't cut in half -> return
+    // if size > 1 then cut in half [0] + cutInHalf(cutInHalf[1])[0] -> restart algo
+    // if size == 0 then cutInHalf(cutInHalf[0])[0] -> restart algo
+    private List<CountryEntity> identifyCountry(String number, int cutIndex) {
+        var numberWithoutWhiteSpaces = number.replaceAll("\\s", "");
+        cutIndex = cutIndex == 0 ? numberWithoutWhiteSpaces.length() : cutIndex;
+        String first = numberWithoutWhiteSpaces.substring(0, cutIndex);
 
+
+
+        var result = phoneValidatorRepository.renameMe(first);
+        if (!result.isEmpty()) {
+            return result;
+        }
+        return identifyCountry(number, cutIndex - 1);
     }
 
-
-    //TODO consider removing method
-    private void saveToDb(List<Map.Entry<String, List<String>>> identifiedCountry) {
-//        var mappedCountryEntities = countryMapper.toEntities(identifiedCountry);
-//        phoneValidatorRepository.saveAll(mappedCountryEntities);
-
+    private Pair<String, String> cutString(String string, int cutIndex) {
+        return Pair.of(string.substring(0, cutIndex), string.substring(cutIndex));
     }
 
 }

@@ -10,7 +10,7 @@ public class CountryCodeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "country_code", nullable = false)
+    @Column(name = "country_code", nullable = false, length = 10)
     private String countryCode;
 
     @ManyToOne
