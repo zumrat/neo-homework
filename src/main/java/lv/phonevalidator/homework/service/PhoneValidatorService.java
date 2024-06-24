@@ -3,12 +3,12 @@ package lv.phonevalidator.homework.service;
 import jakarta.annotation.PostConstruct;
 import lv.phonevalidator.homework.entity.CountryEntity;
 import lv.phonevalidator.homework.mapper.CountryMapper;
+import lv.phonevalidator.homework.model.CountryDTO;
 import lv.phonevalidator.homework.repository.PhoneValidatorRepository;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
-import org.jsoup.select.Elements;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -33,14 +33,17 @@ public class PhoneValidatorService {
         this.phoneValidatorRepository = phoneValidatorRepository;
     }
 
-    public void mainFlow() {
-        //call populateDatabaseWithPhoneNumbers
+    public List<CountryDTO> mainFlow(String number) throws IOException {
+
         //run alghorithm
-        //return
+        var results = identifyCountry(number, 0);
+        return results.stream()
+                .map(countryMapper::toCountryDTO)
+                .toList();
     }
 
 
-    @PostConstruct
+    @PostConstruct // runs after application starts
     public void populateDatabaseWithPhoneNumbers() throws IOException {
         Document doc = Jsoup.connect(WIKI_PAGE).get();
 //        log(doc.title());
@@ -58,15 +61,6 @@ public class PhoneValidatorService {
                         phoneValidatorRepository.save(countryEntity);
                     }
                 });
-
-        identifyCountry("37128818914", 0);
-
-        System.out.println(doc.title());
-        System.out.println(countryAndCountryCodesMap);
-
-        Elements newsHeadlines = doc.select("#mp-itn b a");
-
-
     }
 
     private static List<String> getCountryCodes(Node tableRow) {
